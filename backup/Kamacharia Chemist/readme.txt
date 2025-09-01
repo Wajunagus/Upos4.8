@@ -2,63 +2,62 @@ edit env file as you would prefer
 for me i use http://localhost:8888/kanjiwines/public/login
 to access the software
 
-------------------------------------------------------------------
-                                                  Tue, Jul 29, '25
+---------------------------------------------------------------------------
+                                                           Sat, Aug 30, '25
+                                                           ----------------
+Steps to Share Wampserver App on LAN
 
-Windows IP Configuration
+1. Get Your PC’s Local IP Address
+On the server computer (where Wampserver is installed):
+=> Open Command Prompt → type:
+   ipconfig
+=> Look for IPv4 Address, e.g.:
+   IPv4 Address. . . . . . . . . . . : 192.168.1.101
 
+2. Configure Apache to Listen on All Interfaces
+Edit the Apache configuration:
+=> Open:
+   C:\wamp64\bin\apache\apache2.4.xx\conf\httpd.conf
+=> Find:
+   Listen 127.0.0.1:80
+=> Change to:
+   Listen 0.0.0.0:80
+This makes Apache accept requests from other computers, not just localhost.
 
-Ethernet adapter Ethernet:
+3. Update Virtual Host Configuration
+=> Open:
+   C:\wamp64\bin\apache\apache2.4.xx\conf\extra\httpd-vhosts.conf
+=> Add/modify a block like this:
+   <VirtualHost *:80>
+      DocumentRoot "C:/wamp64/www/Upos4.8/public"
+      ServerName localhost
 
-   Connection-specific DNS Suffix  . :
-   Link-local IPv6 Address . . . . . : fe80::d1c8:c1b:1a9c:5674%15
-   Autoconfiguration IPv4 Address. . : 169.254.86.116
-   Subnet Mask . . . . . . . . . . . : 255.255.0.0
-   Default Gateway . . . . . . . . . :
+      <Directory "C:/wamp64/www/Upos4.8/public">
+         Options Indexes FollowSymLinks
+         AllowOverride All
+         Require all granted
+      </Directory>
+   </VirtualHost>
+-> The important line is:
+   Require all granted
+which allows access from LAN devices.
 
-Wireless LAN adapter Local Area Connection* 1:
+4. Open Firewall Port 80
+=> Go to Windows Defender Firewall → Advanced Settings.
+=> Create a new inbound rule:
+   -> Type: Port
+   -> Protocol: TCP
+   -> Port: 80
+   -> Action: Allow the connection
+   -> Apply to Domain, Private, Public
 
-   Media State . . . . . . . . . . . : Media disconnected
-   Connection-specific DNS Suffix  . :
+5. Restart Wampserver
+=> Left-click Wampserver tray icon → Restart All Services.
 
-Wireless LAN adapter Local Area Connection* 2:
+6. Access from Another Computer
+On another PC connected to the same LAN/WiFi:
+=> Open a browser and enter:
+   http://192.168.1.101/Upos4.8/public/pos
 
-   Media State . . . . . . . . . . . : Media disconnected
-   Connection-specific DNS Suffix  . :
-
-Wireless LAN adapter Wi-Fi:
-
-   Connection-specific DNS Suffix  . :
-   Link-local IPv6 Address . . . . . : fe80::e892:c914:3eae:3eb3%9
-   IPv4 Address. . . . . . . . . . . : 192.168.0.106
-   Subnet Mask . . . . . . . . . . . : 255.255.255.0
-   Default Gateway . . . . . . . . . : 192.168.0.1
-
-------------------------------------------------------------------
-                                                  Wed, Jul 30, '25
-
-Ethernet adapter Ethernet:
-
-   Connection-specific DNS Suffix  . :
-   Link-local IPv6 Address . . . . . : fe80::d1c8:c1b:1a9c:5674%15
-   Autoconfiguration IPv4 Address. . : 169.254.86.116
-   Subnet Mask . . . . . . . . . . . : 255.255.0.0
-   Default Gateway . . . . . . . . . :
-
-Wireless LAN adapter Local Area Connection* 1:
-
-   Media State . . . . . . . . . . . : Media disconnected
-   Connection-specific DNS Suffix  . :
-
-Wireless LAN adapter Local Area Connection* 2:
-
-   Media State . . . . . . . . . . . : Media disconnected
-   Connection-specific DNS Suffix  . :
-
-Wireless LAN adapter Wi-Fi:
-
-   Connection-specific DNS Suffix  . :
-   Link-local IPv6 Address . . . . . : fe80::e892:c914:3eae:3eb3%9
-   IPv4 Address. . . . . . . . . . . : 192.168.0.106
-   Subnet Mask . . . . . . . . . . . : 255.255.255.0
-   Default Gateway . . . . . . . . . : 192.168.0.1
+   (replace 192.168.1.101 with your actual server IP from step 1).
+You should now see the same POS system login/dashboard.
